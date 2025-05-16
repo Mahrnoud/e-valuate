@@ -1,7 +1,6 @@
 // store/notifications.js - Notifications store
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-// import notificationsService from '../services/notificationsService'
 import { notificationsService } from '@/services/mockAdapter';
 
 export const useNotificationsStore = defineStore('notifications', () => {

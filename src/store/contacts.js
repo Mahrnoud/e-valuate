@@ -1,7 +1,6 @@
-// store/contacts.js - Contacts and circles store
+// store/contacts.js - Contacts store
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-// import contactsService from '../services/contactsService'
 import { contactsService } from '@/services/mockAdapter';
 
 export const useContactsStore = defineStore('contacts', () => {

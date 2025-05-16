@@ -2,6 +2,12 @@
 import mockApiService from './mockApiService';
 import { development } from '@/config';
 
+// Import real services (using ES module syntax)
+import authServiceReal from './authService';
+import contactsServiceReal from './contactsService';
+import ratingsServiceReal from './ratingsService';
+import notificationsServiceReal from './notificationsService';
+
 // Check if we should use mock API
 const useMockApi = development.useMockApi;
 
@@ -16,11 +22,11 @@ if (useMockApi) {
     ratingsService = mockApiService.ratings;
     notificationsService = mockApiService.notifications;
 } else {
-    // Import real services
-    authService = require('./authService').default;
-    contactsService = require('./contactsService').default;
-    ratingsService = require('./ratingsService').default;
-    notificationsService = require('./notificationsService').default;
+    // Use imported real services
+    authService = authServiceReal;
+    contactsService = contactsServiceReal;
+    ratingsService = ratingsServiceReal;
+    notificationsService = notificationsServiceReal;
 }
 
 // Export services
