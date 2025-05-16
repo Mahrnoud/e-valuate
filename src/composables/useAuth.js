@@ -1,22 +1,38 @@
-// src/composables/useAuth.js - Modified for router navigation
+// src/composables/useAuth.js - Modified to persist state during navigation
 
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
+
+// Create global refs to ensure state persists between route changes
+const globalPhoneNumber = ref(localStorage.getItem('auth_phoneNumber') || '');
+const globalVerificationCode = ref('');
+const globalStep = ref(localStorage.getItem('auth_step') || 'phone');
+const globalFirstName = ref('');
+const globalLastName = ref('');
+const globalEmail = ref('');
+
+// Sync with localStorage when changes occur
+watch(globalPhoneNumber, (newVal) => {
+    localStorage.setItem('auth_phoneNumber', newVal);
+});
+
+watch(globalStep, (newVal) => {
+    localStorage.setItem('auth_step', newVal);
+    console.log("Step changed to:", newVal);
+});
 
 export function useAuth() {
     const router = useRouter()
     const authStore = useAuthStore()
 
-    // Form state
-    const phoneNumber = ref('')
-    const verificationCode = ref('')
-    const firstName = ref('')
-    const lastName = ref('')
-    const email = ref('')
-
-    // We'll keep the step for backward compatibility
-    const step = ref('phone') // 'phone', 'code', 'profile'
+    // Use the global state
+    const phoneNumber = globalPhoneNumber;
+    const verificationCode = globalVerificationCode;
+    const step = globalStep;
+    const firstName = globalFirstName;
+    const lastName = globalLastName;
+    const email = globalEmail;
 
     // Computed properties
     const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -47,11 +63,17 @@ export function useAuth() {
     const verifyCode = async () => {
         if (!verificationCode.value) return false
 
+        console.log(`Verifying code ${verificationCode.value} for phone ${phoneNumber.value}`);
+
         const user = await authStore.verifyCode(phoneNumber.value, verificationCode.value)
 
         if (user) {
             // Check if profile is complete
             if (user.isProfileComplete) {
+                // Clear temporary auth data from localStorage
+                localStorage.removeItem('auth_phoneNumber');
+                localStorage.removeItem('auth_step');
+
                 router.push({ name: 'home' })
             } else {
                 console.log("Setting step to 'profile' in verifyCode")
@@ -79,6 +101,10 @@ export function useAuth() {
         const updatedUser = await authStore.completeProfile(profileData)
 
         if (updatedUser) {
+            // Clear temporary auth data from localStorage
+            localStorage.removeItem('auth_phoneNumber');
+            localStorage.removeItem('auth_step');
+
             router.push({ name: 'home' })
             return true
         }
@@ -104,6 +130,11 @@ export function useAuth() {
         lastName.value = ''
         email.value = ''
         step.value = 'phone'
+
+        // Clear localStorage items
+        localStorage.removeItem('auth_phoneNumber');
+        localStorage.removeItem('auth_step');
+
         console.log("Reset flow, step is now:", step.value)
     }
 

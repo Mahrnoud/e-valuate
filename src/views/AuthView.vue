@@ -7,50 +7,30 @@
       </div>
 
       <div class="auth-card">
-        <transition name="fade" mode="out-in">
-          <!-- Show phone login step -->
-          <PhoneLogin v-if="step === 'phone'" />
-
-          <!-- Show verification code step -->
-          <VerificationCode v-else-if="step === 'code'" />
-
-          <!-- Show complete profile step -->
-          <CompleteProfile v-else-if="step === 'profile'" />
-        </transition>
+        <!-- Use router-view instead of conditionally rendering components based on step -->
+        <router-view></router-view>
       </div>
-    </div>
-
-    <!-- Debug element to see current step (can be removed in production) -->
-    <div class="debug-info" style="position: fixed; bottom: 10px; right: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px; font-size: 12px; color: #666;">
-      Current step: {{ step }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import PhoneLogin from '../components/auth/PhoneLogin.vue'
-import VerificationCode from '../components/auth/VerificationCode.vue'
-import CompleteProfile from '../components/auth/CompleteProfile.vue'
 
-// Get step from auth composable
-const { step, resetFlow } = useAuth()
+const route = useRoute()
+const { resetFlow } = useAuth()
 
-// Only reset flow on component mount if not already in progress
+// Only reset flow on component mount if not in a specific auth route
 onMounted(() => {
-  console.log("AuthView mounted, current step:", step.value)
+  console.log("AuthView mounted, current route:", route.path)
 
-  // Only reset if we're not in the middle of a flow
-  if (step.value !== 'code' && step.value !== 'profile') {
+  // Only reset if we're just at the main auth route
+  if (route.path === '/auth') {
     console.log("Resetting flow on mount")
     resetFlow()
   }
-})
-
-// Debug: watch for step changes
-watch(step, (newStep, oldStep) => {
-  console.log(`Step changed from ${oldStep} to ${newStep}`)
 })
 </script>
 
@@ -82,15 +62,5 @@ watch(step, (newStep, oldStep) => {
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

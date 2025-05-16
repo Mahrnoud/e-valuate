@@ -1,4 +1,4 @@
-<!-- Modified components/auth/VerificationCode.vue - Using router navigation -->
+<!-- components/auth/VerificationCode.vue -->
 <template>
   <div class="verification-code">
     <h1 class="title">Verify Your Phone</h1>
@@ -39,6 +39,12 @@
         {{ error }}
       </div>
 
+      <div v-if="debugMode" class="debug-info">
+        <p>Debug info:</p>
+        <p>Phone Number: {{ phoneNumber }}</p>
+        <p>Last Code Sent: {{ lastCodeSent }}</p>
+      </div>
+
       <button
           type="submit"
           class="submit-button"
@@ -52,9 +58,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+
+// For development debugging
+const debugMode = ref(true); // Set to false in production
+const lastCodeSent = ref('');
 
 // Get router
 const router = useRouter()
@@ -88,14 +98,31 @@ const formatPhone = (phone) => {
 // Focus code input on mount
 onMounted(() => {
   codeInput.value?.focus()
+
+  // For debugging - check if we have the phone number
+  console.log("VerificationCode mounted, phoneNumber:", phoneNumber.value);
+
+  // Retrieve the code from localStorage for debugging purposes
+  // This simulates accessing the verification code in development
+  if (debugMode.value) {
+    const tokens = JSON.parse(localStorage.getItem('tokens') || '{}');
+    const verificationCodes = tokens.verificationCodes || {};
+    lastCodeSent.value = verificationCodes[phoneNumber.value] || 'No code found';
+    console.log("Last code sent:", lastCodeSent.value);
+  }
 })
 
 // Handle form submission
 const handleSubmit = async () => {
-  const success = await verifyCode()
+  console.log(`Submitting verification code: ${verificationCode.value} for phone: ${phoneNumber.value}`);
 
-  // The verifyCode function handles navigation in most cases,
-  // but we could add additional logic here if needed
+  if (!phoneNumber.value) {
+    console.error("Phone number is missing. Please go back and re-enter your phone number.");
+    return;
+  }
+
+  const success = await verifyCode()
+  console.log("Verification result:", success);
 }
 
 // Go back to phone number input
@@ -107,6 +134,15 @@ const goBack = () => {
 const resendCode = async () => {
   if (phoneNumber.value) {
     await requestCode()
+
+    // Update debug info
+    if (debugMode.value) {
+      setTimeout(() => {
+        const tokens = JSON.parse(localStorage.getItem('tokens') || '{}');
+        const verificationCodes = tokens.verificationCodes || {};
+        lastCodeSent.value = verificationCodes[phoneNumber.value] || 'No code found';
+      }, 1000);
+    }
   }
 }
 </script>
@@ -195,6 +231,16 @@ const resendCode = async () => {
   color: #ef4444;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
+}
+
+.debug-info {
+  background-color: #f0f9ff;
+  border: 1px dashed #3b82f6;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  color: #1e40af;
 }
 
 .submit-button {
