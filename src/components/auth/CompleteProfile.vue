@@ -1,4 +1,4 @@
-<!-- components/auth/CompleteProfile.vue -->
+<!-- Modified components/auth/CompleteProfile.vue - Using router navigation -->
 <template>
   <div class="complete-profile">
     <h1 class="title">Complete Your Profile</h1>
@@ -62,7 +62,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useAuth } from '../../composables/useAuth'
+import { useAuth } from '@/composables/useAuth'
 
 // Import auth composable
 const {
@@ -90,6 +90,7 @@ const isValidEmail = (email) => {
 const handleSubmit = async () => {
   if (isFormValid.value) {
     await completeProfile()
+    // No need for router navigation here, completeProfile handles it
   }
 }
 </script>
@@ -143,6 +144,11 @@ const handleSubmit = async () => {
   outline: none;
   border-color: #4f46e5;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.input:disabled {
+  background-color: #f9fafb;
+  cursor: not-allowed;
 }
 
 .error-message {

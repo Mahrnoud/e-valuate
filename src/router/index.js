@@ -1,4 +1,5 @@
-// router/index.js - Vue Router configuration
+// Modified router/index.js - Adding nested auth routes
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 
@@ -8,6 +9,11 @@ import AuthView from '../views/AuthView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ContactsView from '../views/ContactsView.vue'
 import RatingView from '../views/RatingView.vue'
+
+// Import auth components for nested routes
+import PhoneLogin from '../components/auth/PhoneLogin.vue'
+import VerificationCode from '../components/auth/VerificationCode.vue'
+import CompleteProfile from '../components/auth/CompleteProfile.vue'
 
 // Define routes
 const routes = [
@@ -19,9 +25,25 @@ const routes = [
     },
     {
         path: '/auth',
-        name: 'auth',
         component: AuthView,
-        meta: { guest: true }
+        meta: { guest: true },
+        children: [
+            {
+                path: '',
+                name: 'auth',
+                component: PhoneLogin
+            },
+            {
+                path: 'verify',
+                name: 'auth-verify',
+                component: VerificationCode
+            },
+            {
+                path: 'profile',
+                name: 'auth-profile',
+                component: CompleteProfile
+            }
+        ]
     },
     {
         path: '/profile',
@@ -68,7 +90,7 @@ router.beforeEach((to, from, next) => {
         next({ name: 'auth' })
     }
     // Prevent authenticated users from accessing guest routes
-    else if (to.meta.guest && isLoggedIn) {
+    else if (to.meta.guest && isLoggedIn && to.name !== 'auth-profile') {
         console.log('Redirecting to home because route is guest-only but user is logged in');
         next({ name: 'home' })
     } else {

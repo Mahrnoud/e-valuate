@@ -1,4 +1,4 @@
-// src/composables/useAuth.js - Fixed version
+// src/composables/useAuth.js - Modified for router navigation
 
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -8,15 +8,15 @@ export function useAuth() {
     const router = useRouter()
     const authStore = useAuthStore()
 
-    // Verification flow state
+    // Form state
     const phoneNumber = ref('')
     const verificationCode = ref('')
-    const step = ref('phone') // 'phone', 'code', 'profile'
-
-    // Profile state
     const firstName = ref('')
     const lastName = ref('')
     const email = ref('')
+
+    // We'll keep the step for backward compatibility
+    const step = ref('phone') // 'phone', 'code', 'profile'
 
     // Computed properties
     const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -33,7 +33,7 @@ export function useAuth() {
         const success = await authStore.requestVerificationCode(phoneNumber.value)
 
         if (success) {
-            console.log("Setting step to 'code' in requestCode")
+            console.log("requestCode successful, setting step to 'code'")
             step.value = 'code'
             return true
         }
@@ -56,6 +56,7 @@ export function useAuth() {
             } else {
                 console.log("Setting step to 'profile' in verifyCode")
                 step.value = 'profile'
+                router.push({ name: 'auth-profile' })
             }
             return true
         }

@@ -1,4 +1,4 @@
-<!-- components/auth/VerificationCode.vue -->
+<!-- Modified components/auth/VerificationCode.vue - Using router navigation -->
 <template>
   <div class="verification-code">
     <h1 class="title">Verify Your Phone</h1>
@@ -26,7 +26,7 @@
           />
         </div>
         <div class="helper-actions">
-          <button type="button" class="text-button" @click="requestCode">
+          <button type="button" class="text-button" @click="resendCode">
             Resend Code
           </button>
           <button type="button" class="text-button" @click="goBack">
@@ -53,7 +53,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+
+// Get router
+const router = useRouter()
 
 // Input reference
 const codeInput = ref(null)
@@ -64,7 +68,6 @@ const {
   verificationCode,
   verifyCode,
   requestCode,
-  step,
   isLoading,
   error
 } = useAuth()
@@ -89,12 +92,22 @@ onMounted(() => {
 
 // Handle form submission
 const handleSubmit = async () => {
-  await verifyCode()
+  const success = await verifyCode()
+
+  // The verifyCode function handles navigation in most cases,
+  // but we could add additional logic here if needed
 }
 
 // Go back to phone number input
 const goBack = () => {
-  step.value = 'phone'
+  router.push({ name: 'auth' })
+}
+
+// Resend verification code
+const resendCode = async () => {
+  if (phoneNumber.value) {
+    await requestCode()
+  }
 }
 </script>
 
