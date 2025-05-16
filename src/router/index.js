@@ -60,15 +60,17 @@ router.beforeEach((to, from, next) => {
     const isLoggedIn = authStore.isAuthenticated
 
     // Check if route requires authentication
-    if (to.meta.requiresAuth && !isLoggedIn) {
-        next({ name: 'auth' })
-    }
-    // Prevent authenticated users from accessing guest routes
-    else if (to.meta.guest && isLoggedIn) {
-        next({ name: 'home' })
-    } else {
-        next()
-    }
+    // if (to.meta.requiresAuth && !isLoggedIn) {
+    //     next({ name: 'auth' })
+    // }
+    // // Prevent authenticated users from accessing guest routes
+    // else if (to.meta.guest && isLoggedIn) {
+    //     next({ name: 'home' })
+    // } else {
+    //     next()
+    // }
+
+    next()
 })
 
 export default router

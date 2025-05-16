@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useContactsStore } from '../store/contacts'
 
+
 export function useCircles() {
     const contactsStore = useContactsStore()
 

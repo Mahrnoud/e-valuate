@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <style>
+    .logo-bg { fill: #4F46E5; }
+    .logo-circle { fill: white; }
+    .logo-face { fill: #4F46E5; }
+  </style>
+  <circle class="logo-bg" cx="100" cy="100" r="100" />
+  <circle class="logo-circle" cx="100" cy="100" r="85" />
+  <g class="logo-face">
+    <!-- Left eye -->
+    <circle cx="70" cy="80" r="10" />
+    <!-- Right eye -->
+    <circle cx="130" cy="80" r="10" />
+    <!-- Smile path -->
+    <path d="M65,120 Q100,150 135,120" stroke="#4F46E5" stroke-width="10" fill="none" />
+    <!-- Rating stars -->
+    <g transform="translate(60, 30)">
+      <polygon points="0,0 2.4,5 8,5.8 4,9.7 4.8,15.2 0,12.6 -4.8,15.2 -4,9.7 -8,5.8 -2.4,5" />
+    </g>
+    <g transform="translate(140, 30)">
+      <polygon points="0,0 2.4,5 8,5.8 4,9.7 4.8,15.2 0,12.6 -4.8,15.2 -4,9.7 -8,5.8 -2.4,5" />
+    </g>
+    <g transform="translate(100, 20)">
+      <polygon points="0,0 3.5,7.5 12,8.5 6,14.5 7,22.5 0,18.5 -7,22.5 -6,14.5 -12,8.5 -3.5,7.5" />
+    </g>
+  </g>
+</svg>
