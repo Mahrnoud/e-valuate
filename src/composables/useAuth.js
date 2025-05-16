@@ -1,7 +1,8 @@
-// composables/useAuth.js - Authentication composable
+// src/composables/useAuth.js - Modified version
+
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../store/auth'
+import { useAuthStore } from '@/store/auth'
 
 export function useAuth() {
     const router = useRouter()

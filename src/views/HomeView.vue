@@ -173,10 +173,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useContacts } from '../composables/useContacts'
-import { useNotifications } from '../composables/useNotifications'
-import { useRatings } from '../composables/useRatings'
-import { useAuth } from '../composables/useAuth'
+import { useContacts } from '@/composables/useContacts'
+import { useNotifications } from '@/composables/useNotifications'
+import { useRatings } from '@/composables/useRatings'
+import { useAuth } from '@/composables/useAuth'
 import ContactList from '../components/contacts/ContactList.vue'
 
 // Show/hide invite modal

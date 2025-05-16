@@ -1,7 +1,8 @@
 // store/auth.js - Authentication store
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import authService from '../services/authService'
+// import authService from '../services/authService'
+import { authService } from '@/services/mockAdapter';
 
 export const useAuthStore = defineStore('auth', () => {
     // State

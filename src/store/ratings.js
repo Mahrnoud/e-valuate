@@ -1,7 +1,8 @@
 // store/ratings.js - Ratings store
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import ratingsService from '../services/ratingsService'
+// import ratingsService from '../services/ratingsService'
+import { ratingsService } from '@/services/mockAdapter';
 
 export const useRatingsStore = defineStore('ratings', () => {
     // State

@@ -36,8 +36,8 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
-import { useAuth } from '../../composables/useAuth'
+import { watch, nextTick } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 
 // Import auth composable
 const {

@@ -245,7 +245,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useContacts } from '../composables/useContacts'
+import { useContacts } from '@/composables/useContacts'
 import CircleSelector from '../components/contacts/CircleSelector.vue'
 import ContactList from '../components/contacts/ContactList.vue'
 import ContactForm from '../components/contacts/ContactForm.vue'

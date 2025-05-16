@@ -88,7 +88,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useRatings } from '../composables/useRatings'
+import { useRatings } from '@/composables/useRatings'
 import TraitSlider from '../components/ratings/TraitSlider.vue'
 import RatingProgress from '../components/ratings/RatingProgress.vue'
 import Spinner from '../components/ui/Spinner.vue'

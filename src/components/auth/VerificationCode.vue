@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useAuth } from '../../composables/useAuth'
+import { useAuth } from '@/composables/useAuth'
 
 // Input reference
 const codeInput = ref(null)

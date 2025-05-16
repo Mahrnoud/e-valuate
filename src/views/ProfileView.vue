@@ -129,7 +129,7 @@
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useProfile } from '../composables/useProfile'
+import { useProfile } from '@/composables/useProfile'
 import ProfileHeader from '../components/profile/ProfileHeader.vue'
 import TraitsSummary from '../components/profile/TraitsSummary.vue'
 import CircleStatus from '../components/profile/CircleStatus.vue'

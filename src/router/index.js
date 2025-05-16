@@ -1,6 +1,6 @@
 // router/index.js - Vue Router configuration
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../store/auth'
+import { useAuthStore } from '@/store/auth'
 
 // Import views
 import HomeView from '../views/HomeView.vue'
@@ -59,18 +59,21 @@ router.beforeEach((to, from, next) => {
     const authStore = useAuthStore()
     const isLoggedIn = authStore.isAuthenticated
 
-    // Check if route requires authentication
-    // if (to.meta.requiresAuth && !isLoggedIn) {
-    //     next({ name: 'auth' })
-    // }
-    // // Prevent authenticated users from accessing guest routes
-    // else if (to.meta.guest && isLoggedIn) {
-    //     next({ name: 'home' })
-    // } else {
-    //     next()
-    // }
+    console.log('Navigation guard: path =', to.path, 'isLoggedIn =', isLoggedIn,
+        'requiresAuth =', to.meta.requiresAuth, 'guest =', to.meta.guest);
 
-    next()
+    // Check if route requires authentication
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        console.log('Redirecting to auth because route requires auth but user is not logged in');
+        next({ name: 'auth' })
+    }
+    // Prevent authenticated users from accessing guest routes
+    else if (to.meta.guest && isLoggedIn) {
+        console.log('Redirecting to home because route is guest-only but user is logged in');
+        next({ name: 'home' })
+    } else {
+        next()
+    }
 })
 
 export default router
