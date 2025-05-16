@@ -1,4 +1,4 @@
-// src/composables/useAuth.js - Modified version
+// src/composables/useAuth.js - Fixed version
 
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -33,6 +33,7 @@ export function useAuth() {
         const success = await authStore.requestVerificationCode(phoneNumber.value)
 
         if (success) {
+            console.log("Setting step to 'code' in requestCode")
             step.value = 'code'
             return true
         }
@@ -53,6 +54,7 @@ export function useAuth() {
             if (user.isProfileComplete) {
                 router.push({ name: 'home' })
             } else {
+                console.log("Setting step to 'profile' in verifyCode")
                 step.value = 'profile'
             }
             return true
@@ -101,6 +103,7 @@ export function useAuth() {
         lastName.value = ''
         email.value = ''
         step.value = 'phone'
+        console.log("Reset flow, step is now:", step.value)
     }
 
     /**

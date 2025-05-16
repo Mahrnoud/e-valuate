@@ -1,4 +1,4 @@
-<!-- components/auth/PhoneLogin.vue -->
+<!-- components/auth/PhoneLogin.vue - Simplified test version -->
 <template>
   <div class="phone-login">
     <h1 class="title">Welcome to Character Rating</h1>
@@ -23,20 +23,45 @@
         {{ error }}
       </div>
 
-      <button
-          type="submit"
-          class="submit-button"
-          :disabled="isLoading || !phoneNumber"
-      >
-        <span v-if="isLoading">Sending...</span>
-        <span v-else>Send Code</span>
-      </button>
+      <div class="form-actions">
+        <button
+            type="submit"
+            class="submit-button"
+            :disabled="isLoading || !phoneNumber"
+        >
+          <span v-if="isLoading">Sending...</span>
+          <span v-else>Send Code</span>
+        </button>
+      </div>
+
+      <!-- Debug controls -->
+      <div class="debug-controls" style="margin-top: 20px; padding-top: 10px; border-top: 1px dashed #ccc;">
+        <p style="font-size: 12px; margin-bottom: 10px;">Debug Controls:</p>
+        <div class="debug-buttons" style="display: flex; gap: 10px;">
+          <button
+              type="button"
+              style="padding: 5px 10px; font-size: 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px;"
+              @click="forceNextStep">
+            Force Next Step
+          </button>
+          <button
+              type="button"
+              style="padding: 5px 10px; font-size: 12px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px;"
+              @click="showStepValue">
+            Show Step Value
+          </button>
+        </div>
+      </div>
     </form>
+
+    <div style="margin-top: 20px; font-size: 12px; color: #666;">
+      Current step: {{ step }}
+    </div>
   </div>
 </template>
 
 <script setup>
-import { watch, nextTick } from 'vue'
+import { watch } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 
 // Import auth composable
@@ -44,7 +69,8 @@ const {
   phoneNumber,
   requestCode,
   isLoading,
-  error
+  error,
+  step
 } = useAuth()
 
 // Format phone number as user types
@@ -57,7 +83,40 @@ watch(phoneNumber, (newValue) => {
 
 // Handle form submission
 const handleSubmit = async () => {
-  await requestCode()
+  console.log('Submitting phone number:', phoneNumber.value)
+
+  if (phoneNumber.value) {
+    try {
+      console.log('Before requestCode call, step =', step.value)
+      const success = await requestCode()
+      console.log('After requestCode call, success =', success, 'step =', step.value)
+
+      // Manually force step change
+      if (success) {
+        console.log('Setting step to "code" directly')
+        setTimeout(() => {
+          step.value = 'code'
+          console.log('Step should now be "code", actual value =', step.value)
+        }, 100)
+      }
+    } catch (err) {
+      console.error('Error requesting code:', err)
+    }
+  }
+}
+
+// Debug functions
+const forceNextStep = () => {
+  console.log('Forcing step from', step.value, 'to "code"')
+  step.value = 'code'
+  setTimeout(() => {
+    console.log('After force, step =', step.value)
+  }, 100)
+}
+
+const showStepValue = () => {
+  console.log('Current step value:', step.value)
+  alert('Current step value: ' + step.value)
 }
 </script>
 
@@ -133,6 +192,7 @@ const handleSubmit = async () => {
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.2s;
+  width: 100%;
 }
 
 .submit-button:hover:not(:disabled) {
@@ -142,5 +202,9 @@ const handleSubmit = async () => {
 .submit-button:disabled {
   background-color: #a5a5a5;
   cursor: not-allowed;
+}
+
+.form-actions {
+  width: 100%;
 }
 </style>

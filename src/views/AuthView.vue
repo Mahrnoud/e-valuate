@@ -19,12 +19,17 @@
         </transition>
       </div>
     </div>
+
+    <!-- Debug element to see current step (can be removed in production) -->
+    <div class="debug-info" style="position: fixed; bottom: 10px; right: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px; font-size: 12px; color: #666;">
+      Current step: {{ step }}
+    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useAuth } from '../composables/useAuth'
+import { onMounted, watch } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 import PhoneLogin from '../components/auth/PhoneLogin.vue'
 import VerificationCode from '../components/auth/VerificationCode.vue'
 import CompleteProfile from '../components/auth/CompleteProfile.vue'
@@ -32,9 +37,20 @@ import CompleteProfile from '../components/auth/CompleteProfile.vue'
 // Get step from auth composable
 const { step, resetFlow } = useAuth()
 
-// Reset flow on component mount
+// Only reset flow on component mount if not already in progress
 onMounted(() => {
-  resetFlow()
+  console.log("AuthView mounted, current step:", step.value)
+
+  // Only reset if we're not in the middle of a flow
+  if (step.value !== 'code' && step.value !== 'profile') {
+    console.log("Resetting flow on mount")
+    resetFlow()
+  }
+})
+
+// Debug: watch for step changes
+watch(step, (newStep, oldStep) => {
+  console.log(`Step changed from ${oldStep} to ${newStep}`)
 })
 </script>
 
