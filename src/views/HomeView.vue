@@ -1,4 +1,4 @@
-<!-- views/HomeView.vue -->
+<!-- Fixed HomeView.vue -->
 <template>
   <div class="home-view">
     <div class="page-header">
@@ -202,6 +202,7 @@ const {
   userRatings,
   topPositiveTraits,
   initRatings,
+  loadUserRatings, // Make sure to destructure this function
   isLoading: ratingsLoading
 } = useRatings()
 
@@ -222,15 +223,24 @@ const recentNotifications = computed(() => {
 
 // Initialize data
 onMounted(async () => {
-  await Promise.all([
-    initContacts(),
-    initNotifications(),
-    initRatings()
-  ])
+  try {
+    console.log("HomeView mounted, initializing data...");
 
-  // Load user ratings if user exists
-  if (user.value) {
-    await loadUserRatings(user.value.id)
+    await Promise.all([
+      initContacts(),
+      initNotifications(),
+      initRatings()
+    ]);
+
+    // Load user ratings if user exists
+    if (user.value) {
+      console.log("Loading user ratings for user:", user.value.id);
+      await loadUserRatings(user.value.id);
+    }
+
+    console.log("HomeView initialization complete");
+  } catch (error) {
+    console.error("Error initializing HomeView:", error);
   }
 })
 
