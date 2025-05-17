@@ -75,7 +75,11 @@ const getContacts = async () => {
  * @returns {Promise} - API response with created contact
  */
 const addContact = async (contactData) => {
-    const response = await contactsApi.post('/', contactData)
+    const response = await contactsApi.post('/', {
+        phone_number: contactData.phoneNumber,
+        circle_id: contactData.circleId,
+        name: contactData.name
+    })
     return response.data
 }
 
@@ -106,7 +110,7 @@ const deleteContact = async (contactId) => {
  * @returns {Promise} - API response with invitation results
  */
 const sendRatingInvitations = async (contactIds) => {
-    const response = await contactsApi.post('/send-invitations', { contactIds })
+    const response = await contactsApi.post('/send-invitations', { contact_ids: contactIds })
     return response.data
 }
 

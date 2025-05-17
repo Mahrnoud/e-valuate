@@ -16,19 +16,62 @@ export const useNotificationsStore = defineStore('notifications', () => {
      * Load user notifications
      */
     async function loadNotifications() {
-        isLoading.value = true
-        error.value = null
+        isLoading.value = true;
+        error.value = null;
 
         try {
-            const result = await notificationsService.getNotifications()
-            notifications.value = result.notifications
-            unreadCount.value = result.unreadCount
-            return result
+            const result = await notificationsService.getNotifications();
+
+            // Handle different API response formats
+            if (result && typeof result === 'object') {
+                if (result.data) {
+                    // If API returns nested data structure
+                    if (result.data.notifications) {
+                        notifications.value = result.data.notifications;
+                        unreadCount.value = result.data.unreadCount || 0;
+                    }
+                    // If API returns direct data
+                    else {
+                        notifications.value = Array.isArray(result.data) ? result.data : [];
+                        unreadCount.value = notifications.value.filter(n => !n.read).length;
+                    }
+                }
+                // If result already has expected structure
+                else if (result.notifications) {
+                    notifications.value = result.notifications;
+                    unreadCount.value = result.unreadCount || 0;
+                }
+                // If result is just the notifications array
+                else if (Array.isArray(result)) {
+                    notifications.value = result;
+                    unreadCount.value = notifications.value.filter(n => !n.read).length;
+                }
+                else {
+                    console.warn('Unexpected response format from getNotifications API:', result);
+                    notifications.value = [];
+                    unreadCount.value = 0;
+                }
+            }
+            else {
+                console.warn('Unexpected response format from getNotifications API:', result);
+                notifications.value = [];
+                unreadCount.value = 0;
+            }
+
+            return {
+                notifications: notifications.value,
+                unreadCount: unreadCount.value
+            };
         } catch (err) {
-            error.value = err.message || 'Failed to load notifications'
-            return []
+            error.value = err.message || 'Failed to load notifications';
+            notifications.value = [];
+            unreadCount.value = 0;
+            return {
+                notifications: [],
+                unreadCount: 0
+            };
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
     }
 

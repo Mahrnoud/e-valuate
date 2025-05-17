@@ -1,33 +1,42 @@
-// src/services/mockAdapter.js
 import mockApiService from './mockApiService';
 import { development } from '@/config';
 
-// Import real services (using ES module syntax)
+// Import real services
 import authServiceReal from './authService';
 import contactsServiceReal from './contactsService';
 import ratingsServiceReal from './ratingsService';
 import notificationsServiceReal from './notificationsService';
+
+// Import adapter factory
+import { createAdapters } from './apiAdapter';
 
 // Check if we should use mock API
 const useMockApi = development.useMockApi;
 
 console.log(`Using ${useMockApi ? 'MOCK' : 'REAL'} API services`);
 
-// Define exports
-let authService, contactsService, ratingsService, notificationsService;
+// Get raw services
+const rawServices = useMockApi
+    ? {
+        authService: mockApiService.auth,
+        contactsService: mockApiService.contacts,
+        ratingsService: mockApiService.ratings,
+        notificationsService: mockApiService.notifications
+    }
+    : {
+        authService: authServiceReal,
+        contactsService: contactsServiceReal,
+        ratingsService: ratingsServiceReal,
+        notificationsService: notificationsServiceReal
+    };
 
-if (useMockApi) {
-    authService = mockApiService.auth;
-    contactsService = mockApiService.contacts;
-    ratingsService = mockApiService.ratings;
-    notificationsService = mockApiService.notifications;
-} else {
-    // Use imported real services
-    authService = authServiceReal;
-    contactsService = contactsServiceReal;
-    ratingsService = ratingsServiceReal;
-    notificationsService = notificationsServiceReal;
-}
+// Create adapters from raw services
+const adaptedServices = createAdapters(rawServices);
 
-// Export services
-export { authService, contactsService, ratingsService, notificationsService };
+// Export the adapted services
+export const {
+    authService,
+    contactsService,
+    ratingsService,
+    notificationsService
+} = adaptedServices;

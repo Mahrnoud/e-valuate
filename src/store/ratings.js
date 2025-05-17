@@ -12,8 +12,14 @@ export const useRatingsStore = defineStore('ratings', () => {
 
     // Computed
     const traitsSortedByRating = computed(() => {
+        // Defensive check to ensure traits.value is an array
+        if (!Array.isArray(traits.value)) {
+            console.warn('Expected traits.value to be an array but got:', traits.value);
+            return [];
+        }
+
         // Get average ratings for each trait
-        const averageRatings = {}
+        const averageRatings = {};
 
         // Initialize with 0
         traits.value.forEach(trait => {
@@ -23,34 +29,34 @@ export const useRatingsStore = defineStore('ratings', () => {
                 negativeCount: 0,
                 average: 0,
                 total: 0
-            }
-        })
+            };
+        });
 
         // Calculate averages
         Object.values(userRatings.value).forEach(circleRatings => {
             Object.entries(circleRatings).forEach(([traitId, ratings]) => {
-                if (!averageRatings[traitId]) return
+                if (!averageRatings[traitId]) return;
 
-                const positiveCount = ratings.filter(r => r > 0).length
-                const negativeCount = ratings.filter(r => r < 0).length
-                const sum = ratings.reduce((acc, val) => acc + val, 0)
-                const avg = ratings.length > 0 ? sum / ratings.length : 0
+                const positiveCount = ratings.filter(r => r > 0).length;
+                const negativeCount = ratings.filter(r => r < 0).length;
+                const sum = ratings.reduce((acc, val) => acc + val, 0);
+                const avg = ratings.length > 0 ? sum / ratings.length : 0;
 
-                averageRatings[traitId].positiveCount += positiveCount
-                averageRatings[traitId].negativeCount += negativeCount
-                averageRatings[traitId].total += ratings.length
+                averageRatings[traitId].positiveCount += positiveCount;
+                averageRatings[traitId].negativeCount += negativeCount;
+                averageRatings[traitId].total += ratings.length;
 
                 // Recalculate the overall average
                 averageRatings[traitId].average =
                     (averageRatings[traitId].average * (averageRatings[traitId].total - ratings.length) + sum) /
-                    averageRatings[traitId].total
-            })
-        })
+                    averageRatings[traitId].total;
+            });
+        });
 
         // Convert to array and sort by average (descending)
         return Object.values(averageRatings)
-            .sort((a, b) => b.average - a.average)
-    })
+            .sort((a, b) => b.average - a.average);
+    });
 
     const topPositiveTraits = computed(() => {
         return traitsSortedByRating.value
@@ -102,18 +108,34 @@ export const useRatingsStore = defineStore('ratings', () => {
      * Load all available personality traits
      */
     async function loadTraits() {
-        isLoading.value = true
-        error.value = null
+        isLoading.value = true;
+        error.value = null;
 
         try {
-            const result = await ratingsService.getTraits()
-            traits.value = result
-            return result
+            const result = await ratingsService.getTraits();
+
+            // Handle different API response formats
+            // If result is an object with a data property, use that
+            if (result && typeof result === 'object' && result.data) {
+                traits.value = Array.isArray(result.data) ? result.data : [];
+            }
+            // If result is already an array, use it directly
+            else if (Array.isArray(result)) {
+                traits.value = result;
+            }
+            // Otherwise, set to empty array
+            else {
+                console.warn('Unexpected response format from getTraits API:', result);
+                traits.value = [];
+            }
+
+            return traits.value;
         } catch (err) {
-            error.value = err.message || 'Failed to load traits'
-            return []
+            error.value = err.message || 'Failed to load traits';
+            traits.value = []; // Ensure traits is always an array even on error
+            return [];
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
     }
 
@@ -122,18 +144,33 @@ export const useRatingsStore = defineStore('ratings', () => {
      * @param {string} userId - User ID
      */
     async function loadUserRatings(userId) {
-        isLoading.value = true
-        error.value = null
+        isLoading.value = true;
+        error.value = null;
 
         try {
-            const result = await ratingsService.getUserRatings(userId)
-            userRatings.value = result
-            return result
+            const result = await ratingsService.getUserRatings(userId);
+
+            // Handle different API response formats
+            if (result && typeof result === 'object') {
+                // If result has a data property, use that
+                if (result.data) {
+                    userRatings.value = result.data;
+                }
+                // Otherwise use the entire result
+                else {
+                    userRatings.value = result;
+                }
+            } else {
+                console.warn('Unexpected response format from getUserRatings API:', result);
+                userRatings.value = {};
+            }
+
+            return userRatings.value;
         } catch (err) {
-            error.value = err.message || 'Failed to load user ratings'
-            return {}
+            error.value = err.message || 'Failed to load user ratings';
+            return {};
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
     }
 

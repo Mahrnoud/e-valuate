@@ -29,18 +29,31 @@ export const useContactsStore = defineStore('contacts', () => {
      * Load user circles
      */
     async function loadCircles() {
-        isLoading.value = true
-        error.value = null
+        isLoading.value = true;
+        error.value = null;
 
         try {
-            const result = await contactsService.getCircles()
-            circles.value = result
-            return result
+            const result = await contactsService.getCircles();
+
+            // Handle different API response formats
+            if (result && typeof result === 'object' && result.data) {
+                circles.value = Array.isArray(result.data) ? result.data : [];
+            }
+            else if (Array.isArray(result)) {
+                circles.value = result;
+            }
+            else {
+                console.warn('Unexpected response format from getCircles API:', result);
+                circles.value = [];
+            }
+
+            return circles.value;
         } catch (err) {
-            error.value = err.message || 'Failed to load circles'
-            return []
+            error.value = err.message || 'Failed to load circles';
+            circles.value = []; // Ensure circles is always an array
+            return [];
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
     }
 
@@ -68,18 +81,31 @@ export const useContactsStore = defineStore('contacts', () => {
      * Load user contacts
      */
     async function loadContacts() {
-        isLoading.value = true
-        error.value = null
+        isLoading.value = true;
+        error.value = null;
 
         try {
-            const result = await contactsService.getContacts()
-            contacts.value = result
-            return result
+            const result = await contactsService.getContacts();
+
+            // Handle different API response formats
+            if (result && typeof result === 'object' && result.data) {
+                contacts.value = Array.isArray(result.data) ? result.data : [];
+            }
+            else if (Array.isArray(result)) {
+                contacts.value = result;
+            }
+            else {
+                console.warn('Unexpected response format from getContacts API:', result);
+                contacts.value = [];
+            }
+
+            return contacts.value;
         } catch (err) {
-            error.value = err.message || 'Failed to load contacts'
-            return []
+            error.value = err.message || 'Failed to load contacts';
+            contacts.value = []; // Ensure contacts is always an array
+            return [];
         } finally {
-            isLoading.value = false
+            isLoading.value = false;
         }
     }
 
