@@ -1,8 +1,7 @@
-// composables/useProfile.js - User profile composable
 import { computed } from 'vue'
-import { useAuthStore } from '../store/auth'
-import { useRatingsStore } from '../store/ratings'
-import { useContactsStore } from '../store/contacts'
+import { useAuthStore } from '@/store/auth'
+import { useRatingsStore } from '@/store/ratings'
+import { useContactsStore } from '@/store/contacts'
 
 export function useProfile() {
     const authStore = useAuthStore()

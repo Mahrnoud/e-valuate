@@ -38,7 +38,7 @@ authApi.interceptors.response.use(
  * @returns {Promise} - API response
  */
 const requestVerificationCode = async (phoneNumber) => {
-    const response = await authApi.post('/request-code', { phoneNumber })
+    const response = await authApi.post('/request-code', { phone_number:phoneNumber })
     return response.data
 }
 
@@ -49,7 +49,7 @@ const requestVerificationCode = async (phoneNumber) => {
  * @returns {Promise} - API response with user data and token
  */
 const verifyCode = async (phoneNumber, code) => {
-    const response = await authApi.post('/verify-code', { phoneNumber, code })
+    const response = await authApi.post('/verify-code', { phone_number:phoneNumber, code })
     return response.data
 }
 
@@ -59,7 +59,11 @@ const verifyCode = async (phoneNumber, code) => {
  * @returns {Promise} - API response with updated user
  */
 const updateProfile = async (profileData) => {
-    const response = await authApi.put('/profile', profileData)
+    const response = await authApi.put('/profile', {
+        first_name:profileData.firstName,
+        last_name:profileData.lastName,
+        email:profileData.email
+    })
     return response.data
 }
 
