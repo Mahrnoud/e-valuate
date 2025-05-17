@@ -1,4 +1,7 @@
-// Helper functions to normalize API responses
+// services/apiAdapter.js - Updated to handle case conversion
+import { camelizeKeys, snakifyKeys } from '@/utils/caseConverter';
+
+// Helper functions to normalize API responses with case conversion
 const normalizeResponse = (response, defaultValue = null) => {
     // If response is null or undefined, return default value
     if (response == null) {
@@ -7,11 +10,12 @@ const normalizeResponse = (response, defaultValue = null) => {
 
     // If response has a data property (typical Axios/API response format)
     if (response && typeof response === 'object' && response.data !== undefined) {
-        return response.data;
+        // Convert snake_case to camelCase
+        return camelizeKeys(response.data);
     }
 
-    // Otherwise return the response itself
-    return response;
+    // Otherwise return the response itself with case conversion
+    return camelizeKeys(response);
 };
 
 const normalizeArrayResponse = (response, defaultValue = []) => {
@@ -32,7 +36,9 @@ export const createAdapters = (services) => {
     const authServiceAdapter = {
         requestVerificationCode: async (phoneNumber) => {
             try {
-                const result = await authService.requestVerificationCode(phoneNumber);
+                // Convert to snake_case for the API
+                const payload = { phone_number: phoneNumber };
+                const result = await authService.requestVerificationCode(payload);
                 return normalizeResponse(result, true);
             } catch (error) {
                 console.error('Error in requestVerificationCode:', error);
@@ -42,7 +48,9 @@ export const createAdapters = (services) => {
 
         verifyCode: async (phoneNumber, code) => {
             try {
-                const result = await authService.verifyCode(phoneNumber, code);
+                // Convert to snake_case for the API
+                const payload = { phone_number: phoneNumber, code };
+                const result = await authService.verifyCode(payload);
                 return normalizeObjectResponse(result);
             } catch (error) {
                 console.error('Error in verifyCode:', error);
@@ -52,7 +60,9 @@ export const createAdapters = (services) => {
 
         updateProfile: async (profileData) => {
             try {
-                const result = await authService.updateProfile(profileData);
+                // Convert camelCase to snake_case for the API
+                const payload = snakifyKeys(profileData);
+                const result = await authService.updateProfile(payload);
                 return normalizeObjectResponse(result);
             } catch (error) {
                 console.error('Error in updateProfile:', error);
@@ -85,7 +95,9 @@ export const createAdapters = (services) => {
 
         createCircle: async (circleData) => {
             try {
-                const result = await contactsService.createCircle(circleData);
+                // Convert camelCase to snake_case for the API
+                const payload = snakifyKeys(circleData);
+                const result = await contactsService.createCircle(payload);
                 return normalizeObjectResponse(result);
             } catch (error) {
                 console.error('Error in createCircle:', error);
@@ -95,7 +107,9 @@ export const createAdapters = (services) => {
 
         updateCircle: async (circleId, circleData) => {
             try {
-                const result = await contactsService.updateCircle(circleId, circleData);
+                // Convert camelCase to snake_case for the API
+                const payload = snakifyKeys(circleData);
+                const result = await contactsService.updateCircle(circleId, payload);
                 return normalizeObjectResponse(result);
             } catch (error) {
                 console.error('Error in updateCircle:', error);
@@ -125,7 +139,9 @@ export const createAdapters = (services) => {
 
         addContact: async (contactData) => {
             try {
-                const result = await contactsService.addContact(contactData);
+                // Convert camelCase to snake_case for the API
+                const payload = snakifyKeys(contactData);
+                const result = await contactsService.addContact(payload);
                 return normalizeObjectResponse(result);
             } catch (error) {
                 console.error('Error in addContact:', error);
@@ -135,7 +151,9 @@ export const createAdapters = (services) => {
 
         updateContact: async (contactId, contactData) => {
             try {
-                const result = await contactsService.updateContact(contactId, contactData);
+                // Convert camelCase to snake_case for the API
+                const payload = snakifyKeys(contactData);
+                const result = await contactsService.updateContact(contactId, payload);
                 return normalizeObjectResponse(result);
             } catch (error) {
                 console.error('Error in updateContact:', error);
@@ -155,7 +173,9 @@ export const createAdapters = (services) => {
 
         sendRatingInvitations: async (contactIds) => {
             try {
-                const result = await contactsService.sendRatingInvitations(contactIds);
+                // Convert to snake_case format for the API
+                const payload = { contact_ids: contactIds };
+                const result = await contactsService.sendRatingInvitations(payload);
                 return normalizeResponse(result, { success: true, sent: contactIds.length });
             } catch (error) {
                 console.error('Error in sendRatingInvitations:', error);
@@ -188,7 +208,13 @@ export const createAdapters = (services) => {
 
         submitRating: async (userId, traitId, rating) => {
             try {
-                const result = await ratingsService.submitRating(userId, traitId, rating);
+                // Convert to snake_case format for the API
+                const payload = {
+                    user_id: userId,
+                    trait_id: traitId,
+                    rating
+                };
+                const result = await ratingsService.submitRating(payload);
                 return normalizeResponse(result, { success: true });
             } catch (error) {
                 console.error('Error in submitRating:', error);

@@ -323,22 +323,37 @@ const handleContactAdded = (contact) => {
 }
 
 // Handle editing a contact
+// Update to handleEditContact function in ContactsView.vue
 const handleEditContact = (contact) => {
-  editingContact.value = { ...contact }
-  showEditContactModal.value = true
+  // Make a clean copy of the contact to avoid directly modifying the state
+  editingContact.value = {
+    id: contact.id,
+    name: contact.name,
+    phoneNumber: contact.phoneNumber,
+    email: contact.email || '',
+    circleId: contact.circleId
+  };
+
+  showEditContactModal.value = true;
 }
 
 // Handle updating a contact
 const handleUpdateContact = async () => {
   if (isEditFormValid.value) {
-    const success = await updateContact(editingContact.value.id, editingContact.value)
+    // The updateContact function will handle the camelCase to snake_case conversion
+    const success = await updateContact(editingContact.value.id, {
+      name: editingContact.value.name,
+      phoneNumber: editingContact.value.phoneNumber,
+      email: editingContact.value.email || null,
+      circleId: editingContact.value.circleId
+    });
 
     if (success) {
-      showEditContactModal.value = false
+      showEditContactModal.value = false;
 
       // If a different circle is selected, update selection to show the updated contact
       if (selectedCircleId.value !== 'all' && selectedCircleId.value !== editingContact.value.circleId) {
-        selectedCircleId.value = editingContact.value.circleId
+        selectedCircleId.value = editingContact.value.circleId;
       }
     }
   }

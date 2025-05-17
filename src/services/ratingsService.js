@@ -1,4 +1,4 @@
-// services/ratingsService.js - Ratings service
+// services/ratingsService.js - Updated to work with snake_case API
 import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.characterrating.com'
@@ -41,17 +41,13 @@ const getUserRatings = async (userId) => {
 
 /**
  * Submit a rating for a user and trait
- * @param {string} userId - User being rated
- * @param {string} traitId - Trait being rated
- * @param {number} rating - Rating value (-1 to 1)
+ * @param {Object} data - Rating data in snake_case format
+ *                        (user_id, trait_id, rating)
  * @returns {Promise} - API response with rating confirmation
  */
-const submitRating = async (userId, traitId, rating) => {
-    const response = await ratingsApi.post('/submit', {
-        userId,
-        traitId,
-        rating
-    })
+const submitRating = async (data) => {
+    // The data object should contain user_id, trait_id, and rating in snake_case
+    const response = await ratingsApi.post('/submit', data)
     return response.data
 }
 

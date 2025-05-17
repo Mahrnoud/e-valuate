@@ -71,25 +71,24 @@ const getContacts = async () => {
 
 /**
  * Add a new contact
- * @param {Object} contactData - Contact data (name, phoneNumber, circleId)
+ * @param {Object} contactData - Contact data with snake_case keys
  * @returns {Promise} - API response with created contact
  */
 const addContact = async (contactData) => {
-    const response = await contactsApi.post('/', {
-        phone_number: contactData.phoneNumber,
-        circle_id: contactData.circleId,
-        name: contactData.name
-    })
+    // Note: We're using the snake_case keys as expected by the API
+    // The adapter layer will handle conversion between camelCase and snake_case
+    const response = await contactsApi.post('/', contactData)
     return response.data
 }
 
 /**
  * Update a contact
  * @param {string} contactId - Contact ID
- * @param {Object} contactData - Updated contact data
+ * @param {Object} contactData - Updated contact data with snake_case keys
  * @returns {Promise} - API response with updated contact
  */
 const updateContact = async (contactId, contactData) => {
+    // The adapter layer will handle conversion between camelCase and snake_case
     const response = await contactsApi.put(`/${contactId}`, contactData)
     return response.data
 }
@@ -106,11 +105,12 @@ const deleteContact = async (contactId) => {
 
 /**
  * Send rating invitations to contacts
- * @param {Array} contactIds - Array of contact IDs to invite
+ * @param {Object} data - Object with contact_ids array
  * @returns {Promise} - API response with invitation results
  */
-const sendRatingInvitations = async (contactIds) => {
-    const response = await contactsApi.post('/send-invitations', { contact_ids: contactIds })
+const sendRatingInvitations = async (data) => {
+    // The data object should contain contact_ids in snake_case format
+    const response = await contactsApi.post('/send-invitations', data)
     return response.data
 }
 

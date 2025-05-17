@@ -1,3 +1,4 @@
+// services/authService.js - Updated to work with snake_case API
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.characterrating.com';
@@ -49,17 +50,15 @@ authApi.interceptors.response.use(
 
 /**
  * Request a verification code for a phone number
- * @param {string} phoneNumber - User's phone number
+ * @param {Object} data - Object containing phone_number
  * @returns {Promise} - API response
  */
-const requestVerificationCode = async (phoneNumber) => {
-    console.log('authService.requestVerificationCode called with:', phoneNumber);
+const requestVerificationCode = async (data) => {
+    console.log('authService.requestVerificationCode called with:', data);
     try {
-        // Check if we're using the expected API format or if we need to transform data
-        const body = { phone_number: phoneNumber };
-
-        console.log('Sending request to /request-code with body:', body);
-        const response = await authApi.post('/request-code', body);
+        // The data should already be in snake_case format from the adapter
+        console.log('Sending request to /request-code with body:', data);
+        const response = await authApi.post('/request-code', data);
         console.log('requestVerificationCode response:', response.data);
         return response.data;
     } catch (error) {
@@ -70,17 +69,15 @@ const requestVerificationCode = async (phoneNumber) => {
 
 /**
  * Verify code and authenticate user
- * @param {string} phoneNumber - User's phone number
- * @param {string} code - Verification code
+ * @param {Object} data - Object containing phone_number and code
  * @returns {Promise} - API response with user data and token
  */
-const verifyCode = async (phoneNumber, code) => {
-    console.log('authService.verifyCode called with:', phoneNumber, code);
+const verifyCode = async (data) => {
+    console.log('authService.verifyCode called with:', data);
     try {
-        const body = { phone_number: phoneNumber, code };
-
-        console.log('Sending request to /verify-code with body:', body);
-        const response = await authApi.post('/verify-code', body);
+        // The data should already be in snake_case format from the adapter
+        console.log('Sending request to /verify-code with body:', data);
+        const response = await authApi.post('/verify-code', data);
         console.log('verifyCode response:', response.data);
         return response.data;
     } catch (error) {
@@ -91,20 +88,15 @@ const verifyCode = async (phoneNumber, code) => {
 
 /**
  * Update user profile
- * @param {Object} profileData - User profile data (firstName, lastName, email)
+ * @param {Object} profileData - User profile data in snake_case format
  * @returns {Promise} - API response with updated user
  */
 const updateProfile = async (profileData) => {
     console.log('authService.updateProfile called with:', profileData);
     try {
-        const body = {
-            first_name: profileData.firstName,
-            last_name: profileData.lastName,
-            email: profileData.email
-        };
-
-        console.log('Sending request to /profile with body:', body);
-        const response = await authApi.put('/profile', body);
+        // The profileData should already be in snake_case format from the adapter
+        console.log('Sending request to /profile with body:', profileData);
+        const response = await authApi.put('/profile', profileData);
         console.log('updateProfile response:', response.data);
         return response.data;
     } catch (error) {

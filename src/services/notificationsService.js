@@ -1,4 +1,4 @@
-// services/notificationsService.js - Notifications service
+// services/notificationsService.js - Updated to work with snake_case API
 import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.characterrating.com'
